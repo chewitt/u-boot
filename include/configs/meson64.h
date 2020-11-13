@@ -25,7 +25,7 @@
 
 /* For splashscreen */
 #ifdef CONFIG_VIDEO
-#define STDOUT_CFG "vidconsole,serial"
+#define STDOUT_CFG "serial"
 #else
 #define STDOUT_CFG "serial"
 #endif
