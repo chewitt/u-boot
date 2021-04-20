@@ -5,6 +5,7 @@
  */
 
 #include "meson-gx-u-boot.dtsi"
+#include <dt-bindings/gpio/gpio.h>
 
 &ethmac {
 	snps,reset-gpio = <&gpio GPIOZ_14 0>;
