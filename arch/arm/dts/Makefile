@@ -159,6 +159,8 @@ dtb-$(CONFIG_ARCH_MESON) += \
 	meson-gxbb-nanopi-k2.dtb \
 	meson-gxbb-p200.dtb \
 	meson-gxbb-p201.dtb \
+	meson-gxbb-wetek-hub.dtb \
+	meson-gxbb-wetek-play2.dtb \
 	meson-gxl-s905x-p212.dtb \
 	meson-gxl-s805x-libretech-ac.dtb \
 	meson-gxl-s905x-libretech-cc.dtb \
