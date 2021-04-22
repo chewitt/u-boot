@@ -1,0 +1,8 @@
+WETEK-GXBB
+M:	Christian Hewitt <christianshewitt@gmail.com>
+S:	Maintained
+L:	u-boot-amlogic@groups.io
+F:	board/amlogic/wetek-gxbb/
+F:	configs/wetek-hub_defconfig
+F:	configs/wetek-play2_defconfig
+F:	doc/board/amlogic/wetek-gxbb.rst
