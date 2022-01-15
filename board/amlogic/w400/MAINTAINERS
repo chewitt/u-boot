@@ -5,3 +5,4 @@ L:	u-boot-amlogic@groups.io
 F:	board/amlogic/w400/
 F:	configs/radxa-zero2_defconfig
 F:	doc/board/amlogic/w400.rst
+F:	doc/board/amlogic/radxa-zero2.rst
