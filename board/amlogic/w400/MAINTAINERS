@@ -3,4 +3,5 @@ M:	Neil Armstrong <narmstrong@baylibre.com>
 S:	Maintained
 L:	u-boot-amlogic@groups.io
 F:	board/amlogic/w400/
+F:	configs/radxa-zero2_defconfig
 F:	doc/board/amlogic/w400.rst
