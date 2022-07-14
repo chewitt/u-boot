@@ -15,10 +15,10 @@ This matrix concerns the actual source code version.
 |                               |           | S805X           | S905D        |             | S905D2     | A311D       | S905D3       |
 |                               |           | S905W           |              |             | S905Y2     |             |              |
 +===============================+===========+=================+==============+=============+============+=============+==============+
-| Boards                        | Odroid-C2 | P212            | Khadas VIM2  | S400        | U200       | Odroid-N2   | SEI610       |
-|                               | Nanopi-K2 | Khadas-VIM      | Libretech-PC | JetHub J100 | SEI510     | Khadas-VIM3 | Khadas-VIM3L |
-|                               | P200      | LibreTech-CC v1 | WeTek Core2  |             | Radxa Zero | GT-King/Pro | Odroid-C4    |
-|                               | P201      | LibreTech-AC v2 |              |             |            | GSKing-X    | Odroid-HC4   |
+| Boards                        | Odroid-C2 | P212            | Beelink GT1  | S400        | U200       | Odroid-N2   | SEI610       |
+|                               | Nanopi-K2 | Khadas-VIM      | Khadas VIM2  | JetHub J100 | SEI510     | Khadas-VIM3 | Khadas-VIM3L |
+|                               | P200      | LibreTech-CC v1 | Libretech-PC |             | Radxa Zero | GT-King/Pro | Odroid-C4    |
+|                               | P201      | LibreTech-AC v2 | WeTek Core2  |             |            | GSKing-X    | Odroid-HC4   |
 |                               |           | JetHub J80      |              |             |            | Radxa Zero2 | BananaPi-M5  |
 +-------------------------------+-----------+-----------------+--------------+-------------+------------+-------------+--------------+
 | UART                          | **Yes**   | **Yes**         | **Yes**      | **Yes**     | **Yes**    | **Yes**     | **Yes**      |
@@ -90,6 +90,7 @@ Board Documentation
 
    beelink-gtking
    beelink-gtkingpro
+   beelink-gt1
    jethub-j100
    jethub-j80
    khadas-vim2
