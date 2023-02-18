@@ -20,7 +20,7 @@ This matrix concerns the actual source code version.
 |                               | P200      | LibreTech-CC v1 | Libretech-PC |             | Radxa Zero | GT-King/Pro | Odroid-C4    |
 |                               | P201      | LibreTech-AC v2 | WeTek Core2  |             |            | GSKing-X    | Odroid-HC4   |
 |                               |           | JetHub J80      |              |             |            | Radxa Zero2 | BPi-M2-Pro   |
-|                               |           |                 |              |             |            | Radxa Zero2 | BPi-M5       |
+|                               |           |                 |              |             |            | BPI-M2S     | BPi-M5       |
 +-------------------------------+-----------+-----------------+--------------+-------------+------------+-------------+--------------+
 | UART                          | **Yes**   | **Yes**         | **Yes**      | **Yes**     | **Yes**    | **Yes**     | **Yes**      |
 +-------------------------------+-----------+-----------------+--------------+-------------+------------+-------------+--------------+
