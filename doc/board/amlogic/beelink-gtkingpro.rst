@@ -35,6 +35,7 @@ U-Boot Signing with Pre-Built FIP repo
 --------------------------------------
 
 .. code-block:: bash
+
     $ git clone https://github.com/LibreELEC/amlogic-boot-fip --depth=1
     $ cd amlogic-boot-fip
     $ mkdir my-output-dir
