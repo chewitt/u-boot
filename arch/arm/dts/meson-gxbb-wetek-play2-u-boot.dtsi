@@ -6,6 +6,28 @@
 
 #include "meson-gx-u-boot.dtsi"
 
+/ {
+	smbios {
+		compatible = "u-boot,sysinfo-smbios";
+		smbios {
+			system {
+				manufacturer = "WeTek";
+				product = "Play2";
+			};
+
+			baseboard {
+				manufacturer = "WeTek";
+				product = "Play2";
+			};
+
+			chassis {
+				manufacturer = "WeTek";
+				product = "Play2";
+			};
+		};
+	};
+};
+
 &ethmac {
 	snps,reset-gpio = <&gpio GPIOZ_14 0>;
 	snps,reset-delays-us = <0 10000 1000000>;
