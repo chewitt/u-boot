@@ -6,10 +6,3 @@
 	/delete-property/ reset-gpio;
 	reset-gpios = <&gpio2 RK_PB5 GPIO_ACTIVE_LOW>;
 };
-
-&sfc0 {
-	flash@0 {
-		bootph-pre-ram;
-		bootph-some-ram;
-	};
-};
