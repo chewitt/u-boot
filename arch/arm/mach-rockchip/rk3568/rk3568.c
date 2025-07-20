@@ -14,6 +14,9 @@
 #include <dt-bindings/clock/rk3568-cru.h>
 
 #define PMUGRF_BASE			0xfdc20000
+#define PIPE_GRF_BASE			0xfdc50000
+#define USB3OTG0_CON1			0x104
+#define USB3OTG1_CON1			0x144
 #define GRF_BASE			0xfdc60000
 #define GRF_GPIO1B_DS_2			0x218
 #define GRF_GPIO1B_DS_3			0x21c
@@ -139,6 +142,10 @@ int arch_cpu_init(void)
 	/* Enable VO power domain for display */
 	writel((PMU_PD_VO_DWN_ENA << 16),
 	       PMU_BASE_ADDR + PMU_PWR_GATE_SFTCON);
+
+	/* Disable USB3OTG U3 ports, later enabled in COMBPHY driver */
+	writel(0xffff0181, PIPE_GRF_BASE + USB3OTG0_CON1);
+	writel(0xffff0181, PIPE_GRF_BASE + USB3OTG1_CON1);
 #endif
 	return 0;
 }
