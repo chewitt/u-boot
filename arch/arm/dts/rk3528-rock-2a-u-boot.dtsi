@@ -1,3 +1,7 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 
 #include "rk3528-rock-2-u-boot.dtsi"
+
+&usb_host0_xhci {
+	dr_mode = "host";
+};
