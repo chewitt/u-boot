@@ -58,7 +58,7 @@ static int gmac_rockchip_of_to_plat(struct udevice *dev)
 	const char *string;
 
 	string = dev_read_string(dev, "clock_in_out");
-	if (!strcmp(string, "input"))
+	if (!string || !strcmp(string, "input"))
 		pdata->clock_input = true;
 	else
 		pdata->clock_input = false;

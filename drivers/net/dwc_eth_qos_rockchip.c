@@ -678,9 +678,13 @@ static int eqos_probe_resources_rk(struct udevice *dev)
 	}
 
 	clock_in_out = dev_read_string(dev, "clock_in_out");
-	if (clock_in_out && !strcmp(clock_in_out, "input"))
+	if (!clock_in_out || !strcmp(clock_in_out, "input"))
 		data->clock_input = true;
 	else
+		data->clock_input = false;
+
+	if (pdata->phy_interface >= PHY_INTERFACE_MODE_RGMII &&
+	    pdata->phy_interface <= PHY_INTERFACE_MODE_RGMII_TXID)
 		data->clock_input = false;
 
 	/* snps,reset props are deprecated, do bare minimum to support them */
