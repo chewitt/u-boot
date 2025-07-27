@@ -54,6 +54,7 @@ struct rk_gmac_ops {
 static int gmac_rockchip_of_to_plat(struct udevice *dev)
 {
 	struct gmac_rockchip_plat *pdata = dev_get_plat(dev);
+	struct eth_pdata *eth_pdata = &pdata->dw_eth_pdata.eth_pdata;
 	const char *string;
 
 	string = dev_read_string(dev, "clock_in_out");
@@ -62,15 +63,25 @@ static int gmac_rockchip_of_to_plat(struct udevice *dev)
 	else
 		pdata->clock_input = false;
 
-	/* Check the new naming-style first... */
-	pdata->tx_delay = dev_read_u32_default(dev, "tx_delay", -ENOENT);
-	pdata->rx_delay = dev_read_u32_default(dev, "rx_delay", -ENOENT);
+	eth_pdata->phy_interface = dev_read_phy_mode(dev);
 
-	/* ... and fall back to the old naming style or default, if necessary */
-	if (pdata->tx_delay == -ENOENT)
-		pdata->tx_delay = dev_read_u32_default(dev, "tx-delay", 0x30);
-	if (pdata->rx_delay == -ENOENT)
-		pdata->rx_delay = dev_read_u32_default(dev, "rx-delay", 0x10);
+	pdata->tx_delay = dev_read_u32_default(dev, "tx_delay", -ENOENT);
+	if (pdata->tx_delay == -ENOENT) {
+		if (eth_pdata->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
+		    eth_pdata->phy_interface == PHY_INTERFACE_MODE_RGMII_TXID)
+			pdata->tx_delay = 0;
+		else
+			pdata->tx_delay = 0x30;
+	}
+
+	pdata->rx_delay = dev_read_u32_default(dev, "rx_delay", -ENOENT);
+	if (pdata->rx_delay == -ENOENT) {
+		if (eth_pdata->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
+		    eth_pdata->phy_interface == PHY_INTERFACE_MODE_RGMII_RXID)
+			pdata->rx_delay = 0;
+		else
+			pdata->rx_delay = 0x10;
+	}
 
 	return designware_eth_of_to_plat(dev);
 }
@@ -608,6 +619,9 @@ static int gmac_rockchip_probe(struct udevice *dev)
 
 	switch (eth_pdata->phy_interface) {
 	case PHY_INTERFACE_MODE_RGMII:
+	case PHY_INTERFACE_MODE_RGMII_ID:
+	case PHY_INTERFACE_MODE_RGMII_RXID:
+	case PHY_INTERFACE_MODE_RGMII_TXID:
 		/* Set to RGMII mode */
 		if (ops->set_to_rgmii)
 			ops->set_to_rgmii(pdata);
@@ -628,22 +642,6 @@ static int gmac_rockchip_probe(struct udevice *dev)
 		}
 		break;
 
-	case PHY_INTERFACE_MODE_RGMII_ID:
-		/* Set to RGMII mode */
-		if (ops->set_to_rgmii) {
-			pdata->tx_delay = 0;
-			pdata->rx_delay = 0;
-			ops->set_to_rgmii(pdata);
-		} else
-			return -EPERM;
-
-		if (!pdata->clock_input) {
-			rate = clk_set_rate(&clk, 125000000);
-			if (rate != 125000000)
-				return -EINVAL;
-		}
-		break;
-
 	case PHY_INTERFACE_MODE_RMII:
 		/* Set to RMII mode */
 		if (ops->set_to_rmii)
@@ -654,36 +652,6 @@ static int gmac_rockchip_probe(struct udevice *dev)
 		if (!pdata->clock_input) {
 			rate = clk_set_rate(&clk, 50000000);
 			if (rate != 50000000)
-				return -EINVAL;
-		}
-		break;
-
-	case PHY_INTERFACE_MODE_RGMII_RXID:
-		 /* Set to RGMII_RXID mode */
-		if (ops->set_to_rgmii) {
-			pdata->tx_delay = 0;
-			ops->set_to_rgmii(pdata);
-		} else
-			return -EPERM;
-
-		if (!pdata->clock_input) {
-			rate = clk_set_rate(&clk, 125000000);
-			if (rate != 125000000)
-				return -EINVAL;
-		}
-		break;
-
-	case PHY_INTERFACE_MODE_RGMII_TXID:
-		/* Set to RGMII_TXID mode */
-		if (ops->set_to_rgmii) {
-			pdata->rx_delay = 0;
-			ops->set_to_rgmii(pdata);
-		} else
-			return -EPERM;
-
-		if (!pdata->clock_input) {
-			rate = clk_set_rate(&clk, 125000000);
-			if (rate != 125000000)
 				return -EINVAL;
 		}
 		break;

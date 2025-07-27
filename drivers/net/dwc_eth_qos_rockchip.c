@@ -764,18 +764,30 @@ static int eqos_start_clks_rk(struct udevice *dev)
 	if (data->ops->set_clock_selection)
 		data->ops->set_clock_selection(dev, true);
 
-	tx_delay = dev_read_u32_default(dev, "tx_delay", 0x30);
-	rx_delay = dev_read_u32_default(dev, "rx_delay", 0x10);
+	tx_delay = dev_read_u32_default(dev, "tx_delay", -ENOENT);
+	if (tx_delay == -ENOENT) {
+		if (pdata->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
+		    pdata->phy_interface == PHY_INTERFACE_MODE_RGMII_TXID)
+			tx_delay = 0;
+		else
+			tx_delay = 0x30;
+	}
+
+	rx_delay = dev_read_u32_default(dev, "rx_delay", -ENOENT);
+	if (rx_delay == -ENOENT) {
+		if (pdata->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
+		    pdata->phy_interface == PHY_INTERFACE_MODE_RGMII_RXID)
+			rx_delay = 0;
+		else
+			rx_delay = 0x10;
+	}
 
 	switch (pdata->phy_interface) {
 	case PHY_INTERFACE_MODE_RGMII:
-		return data->ops->set_to_rgmii(dev, tx_delay, rx_delay);
 	case PHY_INTERFACE_MODE_RGMII_ID:
-		return data->ops->set_to_rgmii(dev, 0, 0);
 	case PHY_INTERFACE_MODE_RGMII_RXID:
-		return data->ops->set_to_rgmii(dev, tx_delay, 0);
 	case PHY_INTERFACE_MODE_RGMII_TXID:
-		return data->ops->set_to_rgmii(dev, 0, rx_delay);
+		return data->ops->set_to_rgmii(dev, tx_delay, rx_delay);
 	case PHY_INTERFACE_MODE_RMII:
 		return data->ops->set_to_rmii(dev);
 	}
