@@ -14,6 +14,7 @@
 #include <asm/ptrace.h>
 #include <linux/libfdt.h>
 #include <linux/err.h>
+#include <linux/string.h>
 #include <asm/arch/mem.h>
 #include <asm/arch/sm.h>
 #include <asm/armv8/mmu.h>
@@ -57,9 +58,60 @@ __weak int meson_ft_board_setup(void *blob, struct bd_info *bd)
 	return 0;
 }
 
+static void meson_generate_serial_btaddr(void *blob)
+{
+	const char prefix[] = "brcm,bcm";
+	char serial[SM_SERIAL_SIZE];
+	const char *compat;
+	u8 bdaddr[ARP_HLEN];
+	int node, len;
+	u32 sid;
+	u16 sid16;
+
+	if (meson_sm_get_serial(serial, SM_SERIAL_SIZE))
+		return;
+
+	sid = crc32(0, (unsigned char *)serial, SM_SERIAL_SIZE);
+	sid16 = crc16_ccitt(0, (unsigned char *)serial, SM_SERIAL_SIZE);
+
+	/* Ensure the NIC specific bytes of the mac are not all 0 */
+	if ((sid & 0xffffff) == 0)
+		sid |= 0x800000;
+
+	/*
+	 * Locally administered, unicast address, made distinct from the
+	 * ethaddr derived from the same serial by toggling bit 6 of the
+	 * first  octet. bdaddr[0] is the least significant octet to match
+	 * the device tree byte order.
+	 */
+	bdaddr[5] = ((((sid16 >> 8) & 0xfc) | 0x02) ^ 0x40);
+	bdaddr[4] = (sid16 >> 0) & 0xff;
+	bdaddr[3] = (sid >> 24) & 0xff;
+	bdaddr[2] = (sid >> 16) & 0xff;
+	bdaddr[1] = (sid >> 8) & 0xff;
+	bdaddr[0] = (sid >> 0) & 0xff;
+
+	for (node = fdt_next_node(blob, -1, NULL); node >= 0;
+	     node = fdt_next_node(blob, node, NULL)) {
+		compat = fdt_getprop(blob, node, "compatible", &len);
+		if (!compat || len <= 0)
+			continue;
+		/* match a Broadcom Bluetooth node, e.g. "brcm,bcm4330-bt" */
+		if (strncmp(compat, prefix, strlen(prefix)) || !strstr(compat, "-bt"))
+			continue;
+		/* don't clobber an address provided elsewhere */
+		if (fdt_getprop(blob, node, "local-bd-address", NULL))
+			continue;
+
+		fdt_setprop(blob, node, "local-bd-address", bdaddr, ARP_HLEN);
+	}
+}
+
 int ft_board_setup(void *blob, struct bd_info *bd)
 {
 	meson_init_reserved_memory(blob);
+
+	meson_generate_serial_btaddr(blob);
 
 	return meson_ft_board_setup(blob, bd);
 }
