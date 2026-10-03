@@ -9,6 +9,7 @@
 #include <power-domain.h>
 #include <power-domain-uclass.h>
 #include <dt-bindings/power/meson-a1-power.h>
+#include <dt-bindings/power/meson-s4-power.h>
 
 struct meson_secure_pwrc_domain_desc {
 	char *name;
@@ -120,6 +121,17 @@ static struct meson_secure_pwrc_domain_desc a1_pwrc_domains[] = {
 	SEC_PD(RSA),
 };
 
+static struct meson_secure_pwrc_domain_desc s4_pwrc_domains[] = {
+	SEC_PD(S4_DOS_HEVC),
+	SEC_PD(S4_DOS_VDEC),
+	SEC_PD(S4_VPU_HDMI),
+	SEC_PD(S4_USB_COMB),
+	SEC_PD(S4_GE2D),
+	SEC_PD(S4_ETH),
+	SEC_PD(S4_DEMOD),
+	SEC_PD(S4_AUDIO),
+};
+
 static const struct power_domain_ops meson_secure_pwrc_ops = {
 	.on = meson_secure_pwrc_on,
 	.off = meson_secure_pwrc_off,
@@ -131,10 +143,19 @@ static struct meson_secure_pwrc_domain_data meson_secure_a1_pwrc_data = {
 	.domains = a1_pwrc_domains,
 };
 
+static struct meson_secure_pwrc_domain_data meson_secure_s4_pwrc_data = {
+	.count = ARRAY_SIZE(s4_pwrc_domains),
+	.domains = s4_pwrc_domains,
+};
+
 static const struct udevice_id meson_secure_pwrc_ids[] = {
 	{
 		.compatible = "amlogic,meson-a1-pwrc",
 		.data = (unsigned long)&meson_secure_a1_pwrc_data,
+	},
+	{
+		.compatible = "amlogic,meson-s4-pwrc",
+		.data = (unsigned long)&meson_secure_s4_pwrc_data,
 	},
 	{ }
 };
