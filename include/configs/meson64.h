@@ -128,12 +128,20 @@
 #endif
 
 #define BOOTM_SIZE		__stringify(0x1700000)
+#if defined(CONFIG_MESON_S4)
+#define KERNEL_ADDR_R		__stringify(0x08480000)
+#define FDT_ADDR_R		__stringify(0x01008000)
+#define SCRIPT_ADDR_R		__stringify(0x01000000)
+#define PXEFILE_ADDR_R		__stringify(0x00e00000)
+#define FDTOVERLAY_ADDR_R	__stringify(0x00f00000)
+#else
 #define KERNEL_ADDR_R		__stringify(0x08080000)
-#define KERNEL_COMP_ADDR_R	__stringify(0x0d080000)
 #define FDT_ADDR_R		__stringify(0x08008000)
 #define SCRIPT_ADDR_R		__stringify(0x08000000)
 #define PXEFILE_ADDR_R		__stringify(0x01080000)
 #define FDTOVERLAY_ADDR_R	__stringify(0x01000000)
+#endif
+#define KERNEL_COMP_ADDR_R	__stringify(0x0d080000)
 #define RAMDISK_ADDR_R		__stringify(0x13000000)
 
 #include <config_distro_bootcmd.h>
