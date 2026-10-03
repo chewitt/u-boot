@@ -72,6 +72,7 @@
 	#define PHY_CTRL_R13_I_C2L_FSLS_RX_EN			BIT(30)
 
 #define PHY_CTRL_R14						0x38
+	#define PHY_CTRL_R14_DISCONNECT_THRESHOLD		GENMASK(27, 26)
 #define PHY_CTRL_R15						0x3c
 
 #define PHY_CTRL_R16						0x40
@@ -150,6 +151,7 @@
 enum meson_soc_id {
 	MESON_SOC_A1,
 	MESON_SOC_G12A,
+	MESON_SOC_S4,
 };
 
 struct phy_meson_g12a_usb2_priv {
@@ -219,7 +221,7 @@ static int phy_meson_g12a_usb2_init(struct phy *phy)
 		FIELD_PREP(PHY_CTRL_R18_MPLL_ADJ_LDO, 1) |
 		PHY_CTRL_R18_MPLL_ACG_RANGE;
 
-	if (priv->soc_id == MESON_SOC_A1)
+	if (priv->soc_id != MESON_SOC_G12A)
 		value |= PHY_CTRL_R18_MPLL_DCO_CLK_SEL;
 
 	regmap_write(priv->regmap, PHY_CTRL_R18, value);
@@ -241,7 +243,8 @@ static int phy_meson_g12a_usb2_init(struct phy *phy)
 		PHY_CTRL_R20_USB2_OTG_VBUSDET_EN |
 		FIELD_PREP(PHY_CTRL_R20_USB2_DMON_SEL_3_0, 15) |
 		PHY_CTRL_R20_USB2_EDGE_DRV_EN |
-		FIELD_PREP(PHY_CTRL_R20_USB2_EDGE_DRV_TRIM_1_0, 3) |
+		FIELD_PREP(PHY_CTRL_R20_USB2_EDGE_DRV_TRIM_1_0,
+			   priv->soc_id == MESON_SOC_S4 ? 2 : 3) |
 		FIELD_PREP(PHY_CTRL_R20_USB2_BGR_ADJ_4_0, 0) |
 		FIELD_PREP(PHY_CTRL_R20_USB2_BGR_VREF_4_0, 0) |
 		FIELD_PREP(PHY_CTRL_R20_USB2_BGR_DBG_1_0, 0));
@@ -254,7 +257,7 @@ static int phy_meson_g12a_usb2_init(struct phy *phy)
 			PHY_CTRL_R4_TEST_BYPASS_MODE_EN |
 			FIELD_PREP(PHY_CTRL_R4_I_C2L_BIAS_TRIM_1_0, 0) |
 			FIELD_PREP(PHY_CTRL_R4_I_C2L_BIAS_TRIM_3_2, 0));
-	else if (priv->soc_id == MESON_SOC_A1)
+	else
 		regmap_write(priv->regmap, PHY_CTRL_R21,
 			PHY_CTRL_R21_USB2_CAL_ACK_EN |
 			PHY_CTRL_R21_USB2_TX_STRG_PD |
@@ -263,7 +266,8 @@ static int phy_meson_g12a_usb2_init(struct phy *phy)
 	/* Tuning Disconnect Threshold */
 	regmap_write(priv->regmap, PHY_CTRL_R3,
 		FIELD_PREP(PHY_CTRL_R3_SQUELCH_REF, 0) |
-		FIELD_PREP(PHY_CTRL_R3_HSDIC_REF, 1) |
+		FIELD_PREP(PHY_CTRL_R3_HSDIC_REF,
+			   priv->soc_id == MESON_SOC_S4 ? 3 : 1) |
 		FIELD_PREP(PHY_CTRL_R3_DISC_THRESH, 3));
 
 	/* Analog Settings */
@@ -272,7 +276,14 @@ static int phy_meson_g12a_usb2_init(struct phy *phy)
 		regmap_write(priv->regmap, PHY_CTRL_R13,
 			PHY_CTRL_R13_UPDATE_PMA_SIGNALS |
 			FIELD_PREP(PHY_CTRL_R13_MIN_COUNT_FOR_SYNC_DET, 7));
-	} else if (priv->soc_id == MESON_SOC_A1) {
+	} else if (priv->soc_id == MESON_SOC_S4) {
+		regmap_update_bits(priv->regmap, PHY_CTRL_R14,
+				   PHY_CTRL_R14_DISCONNECT_THRESHOLD,
+				   FIELD_PREP(PHY_CTRL_R14_DISCONNECT_THRESHOLD, 2));
+		regmap_write(priv->regmap, PHY_CTRL_R13,
+			PHY_CTRL_R13_UPDATE_PMA_SIGNALS |
+			FIELD_PREP(PHY_CTRL_R13_MIN_COUNT_FOR_SYNC_DET, 7));
+	} else {
 		regmap_write(priv->regmap, PHY_CTRL_R13,
 			FIELD_PREP(PHY_CTRL_R13_MIN_COUNT_FOR_SYNC_DET, 7));
 	}
@@ -358,6 +369,10 @@ static const struct udevice_id meson_g12a_usb2_phy_ids[] = {
 	{
 		.compatible = "amlogic,a1-usb2-phy",
 		.data = (ulong)MESON_SOC_A1,
+	},
+	{
+		.compatible = "amlogic,s4-usb2-phy",
+		.data = (ulong)MESON_SOC_S4,
 	},
 	{ }
 };
