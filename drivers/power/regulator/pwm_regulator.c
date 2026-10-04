@@ -34,6 +34,8 @@ struct pwm_regulator_info {
 	int min_voltage;
 	/* the current voltage of regulator */
 	int volt_uV;
+	/* the duty cycles in percent at the minimum and maximum voltages */
+	u32 dutycycle_range[2];
 };
 
 static int pwm_regulator_enable(struct udevice *dev, bool enable)
@@ -48,9 +50,11 @@ static int pwm_voltage_to_duty_cycle_percentage(struct udevice *dev, int req_uV)
 	struct pwm_regulator_info *priv = dev_get_priv(dev);
 	int min_uV = priv->min_voltage;
 	int max_uV = priv->max_voltage;
-	int diff = max_uV - min_uV;
+	int min_duty = priv->dutycycle_range[0];
+	int max_duty = priv->dutycycle_range[1];
 
-	return ((req_uV * 100) - (min_uV * 100)) / diff;
+	return min_duty + (int)((s64)(req_uV - min_uV) * (max_duty - min_duty) /
+				(max_uV - min_uV));
 }
 
 static int pwm_regulator_get_voltage(struct udevice *dev)
@@ -100,6 +104,10 @@ static int pwm_regulator_of_to_plat(struct udevice *dev)
 
 	priv->period_ns = args.args[1];
 	priv->polarity = args.args[2];
+
+	priv->dutycycle_range[0] = 0;
+	priv->dutycycle_range[1] = 100;
+	dev_read_u32_array(dev, "pwm-dutycycle-range", priv->dutycycle_range, 2);
 
 	priv->init_voltage = dev_read_u32_default(dev, "regulator-init-microvolt", -1);
 	if (priv->init_voltage < 0) {
