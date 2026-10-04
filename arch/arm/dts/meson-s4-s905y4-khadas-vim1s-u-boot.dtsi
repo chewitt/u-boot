@@ -62,3 +62,7 @@
 		};
 	};
 };
+
+&vddcpu {
+	regulator-init-microvolt = <939000>;
+};
