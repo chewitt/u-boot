@@ -257,6 +257,10 @@ struct meson_mmc_plat mmc_plat[2];
 
 static int meson_legacy_mmc_init(struct mmc *mmc)
 {
+	meson_write(mmc, 0, MESON_SD_EMMC_DELAY1);
+	meson_write(mmc, 0, MESON_SD_EMMC_DELAY2);
+	meson_write(mmc, 0, MESON_SD_EMMC_ADJUST);
+
 	/* reset all status bits */
 	meson_write(mmc, STATUS_MASK, MESON_SD_EMMC_STATUS);
 
@@ -375,6 +379,10 @@ static int meson_mmc_probe(struct udevice *dev)
 			return ret;
 	}
 #endif
+
+	meson_write(mmc, 0, MESON_SD_EMMC_DELAY1);
+	meson_write(mmc, 0, MESON_SD_EMMC_DELAY2);
+	meson_write(mmc, 0, MESON_SD_EMMC_ADJUST);
 
 	/* reset all status bits */
 	meson_write(mmc, STATUS_MASK, MESON_SD_EMMC_STATUS);
