@@ -66,3 +66,8 @@
 &vddcpu {
 	regulator-init-microvolt = <939000>;
 };
+
+&sd_3v3 {
+	/delete-property/ regulator-always-on;
+	regulator-boot-on;
+};
