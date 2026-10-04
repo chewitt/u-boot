@@ -102,6 +102,7 @@ static int pwm_regulator_of_to_plat(struct udevice *dev)
 		return ret;
 	}
 
+	priv->pwm_id = args.args[0];
 	priv->period_ns = args.args[1];
 	priv->polarity = args.args[2];
 
