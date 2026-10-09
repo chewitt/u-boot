@@ -104,6 +104,7 @@ Board Documentation
    khadas-vim3l
    libretech-ac
    libretech-cc
+   minix-u9h
    nanopi-k2
    odroid-c2
    odroid-c4
