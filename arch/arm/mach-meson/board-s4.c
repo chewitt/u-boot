@@ -3,16 +3,17 @@
  * (C) Copyright 2023 SberDevices, Inc.
  */
 
+#include <asm/arch/boot.h>
 #include <asm/arch/mem.h>
 #include <asm/arch/s4.h>
 #include <asm/armv8/mmu.h>
 #include <asm/io.h>
-#include <linux/errno.h>
 #include <linux/sizes.h>
 
 int meson_get_boot_device(void)
 {
-	return -ENOSYS;
+	return (readl(S4_SEC_STATUS_REG2) & S4_BOOT_DEVICE_MASK)
+		>> S4_BOOT_DEVICE_SHIFT;
 }
 
 /*
