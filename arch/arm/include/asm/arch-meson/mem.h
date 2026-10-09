@@ -7,6 +7,8 @@
 #ifndef __MESON_MEM_H__
 #define __MESON_MEM_H__
 
+#include <linux/types.h>
+
 /* Configure the reserved memory zones exported by the secure registers
  * into EFI and DTB reserved memory entries.
  */
