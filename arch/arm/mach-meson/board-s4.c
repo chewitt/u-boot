@@ -47,6 +47,14 @@ void meson_init_reserved_memory(void *fdt)
 		meson_board_add_reserved_memory(fdt, bl32_start, bl32_size);
 }
 
+phys_size_t get_effective_memsize(void)
+{
+	u64 size = ((readl(S4_SEC_STATUS_REG4) & S4_MEM_SIZE_MASK)
+			>> S4_MEM_SIZE_SHIFT) * S4_MEM_SIZE_UNIT;
+
+	return min_t(u64, size, S4_MEM_SIZE_MAX);
+}
+
 static struct mm_region s4_mem_map[] = {
 	{
 		.virt = 0x00000000UL,
