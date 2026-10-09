@@ -1,0 +1,19 @@
+/* SPDX-License-Identifier: GPL-2.0+ */
+
+#ifndef __S4_H__
+#define __S4_H__
+
+#define S4_SYSCTRL_BASE			0xfe010000
+
+#define S4_SYSCTRL_ADDR(off)		(S4_SYSCTRL_BASE + ((off) << 2))
+
+#define S4_SEC_STATUS_REG15		S4_SYSCTRL_ADDR(0xcf)
+#define S4_SEC_STATUS_REG16		S4_SYSCTRL_ADDR(0xd0)
+#define S4_SEC_STATUS_REG17		S4_SYSCTRL_ADDR(0xd1)
+
+#define S4_BL31_RSVMEM_SIZE_MASK	0xFFFF0000
+#define S4_BL31_RSVMEM_SIZE_SHIFT	16
+#define S4_BL32_RSVMEM_SIZE_MASK	0xFFFF
+#define S4_RSVMEM_SIZE_64K_UNITS	0x00F00000
+
+#endif /* __S4_H__ */

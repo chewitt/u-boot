@@ -3,18 +3,47 @@
  * (C) Copyright 2023 SberDevices, Inc.
  */
 
+#include <asm/arch/mem.h>
+#include <asm/arch/s4.h>
 #include <asm/armv8/mmu.h>
 #include <asm/io.h>
-#include <linux/compiler.h>
 #include <linux/errno.h>
-
-void meson_init_reserved_memory(__maybe_unused void *fdt)
-{
-}
+#include <linux/sizes.h>
 
 int meson_get_boot_device(void)
 {
 	return -ENOSYS;
+}
+
+/*
+ * Reserve the BL31 and BL32 memory zones that the secure firmware reports in
+ * SEC_STATUS_REG15 (sizes), REG16 (BL32 start) and REG17 (BL31 start). The
+ * sizes are in KiB, or in 64KiB units when the top nibble of the BL31 size
+ * field is set.
+ */
+void meson_init_reserved_memory(void *fdt)
+{
+	u64 bl31_size, bl31_start;
+	u64 bl32_size, bl32_start;
+	u64 unit = SZ_1K;
+	u32 reg;
+
+	reg = readl(S4_SEC_STATUS_REG15);
+	if (reg & S4_RSVMEM_SIZE_64K_UNITS)
+		unit = SZ_64K;
+
+	bl31_size = ((reg & S4_BL31_RSVMEM_SIZE_MASK)
+			>> S4_BL31_RSVMEM_SIZE_SHIFT) * unit;
+	bl32_size = (reg & S4_BL32_RSVMEM_SIZE_MASK) * unit;
+
+	bl31_start = readl(S4_SEC_STATUS_REG17);
+	bl32_start = readl(S4_SEC_STATUS_REG16);
+
+	if (bl31_start && bl31_size)
+		meson_board_add_reserved_memory(fdt, bl31_start, bl31_size);
+
+	if (bl32_start && bl32_size)
+		meson_board_add_reserved_memory(fdt, bl32_start, bl32_size);
 }
 
 static struct mm_region s4_mem_map[] = {
