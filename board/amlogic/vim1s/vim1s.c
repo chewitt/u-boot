@@ -5,9 +5,22 @@
 
 #include <env.h>
 #include <net-common.h>
+#include <asm/arch/boot.h>
 #include <asm/io.h>
 
 #define SYSCTRL_SEC_STATUS_REG18	0xfe010348
+
+int mmc_get_env_dev(void)
+{
+	switch (meson_get_boot_device()) {
+	case BOOT_DEVICE_EMMC:
+		return 0;
+	case BOOT_DEVICE_SD:
+		return 1;
+	default:
+		return -1;
+	}
+}
 
 int misc_init_r(void)
 {
